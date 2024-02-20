@@ -1,31 +1,62 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import HerbCard from "../components/Databox";
+import * as fs from "fs";
+import { useParams } from "react-router-dom";
 
 const ShowDataPage = () => {
-    const herbData1 = {
-        ชื่อวิทยาศาสตร์: "ZINGIBERACEAE",
-        ชื่อในภาษาอังกฤษ: "GINGER",
-        ชื่อในภาษาไทย: "ขิง",
-        ชื่ออื่น : "ขิงแกลง, ขิงแดง, ขิงเผือก, สะเอ",
-      };
-    
-      const herbData2 = {
-        ข้อมูลทางพฤษศาสตร: "พืชล้มลุก มีเหง้าใต้ดินขึ้นเป็นกอ แทงหน่อใหม่ออกทางด้านข้างด้านนอกสุด เหง้าหรือลำต้นแท้จะเป็นข้อๆ เนื้อในสีขาวหรือเหลืองอ่อน สุดของข้อจะเป็นยอดหรือต้นเทียม สูงพ้นพื้นดินขึ้นมา 50-100 ซม. ลำต้นเทียมมีกาบหรือโคนใบหุ้มใบเป็นใบเดี่ยว ออกเรียงสลับกันเป็นสองแถว ใบรูปหอกเกลี้ยงๆ หลังใบห่อจีบเป็นรูปรางน้ำ ปลายใบสอบเรียวแหลม โคนใบสอบแคบและจะเป็นกาบหุ้มลำต้นเทียม ตรงช่วงต่อระหว่างกาบกับตัวใบจะหักโค้งเป็นข้อศอก ดอกลีขาว ออกเป็นช่อรูปเห็ดหรือกระบองซึ่งแทงขึ้นมาจากเหง้า ทุกๆ ดอกมีกาบสีเขียวปนแดงรูปโค้งๆ ห่อรองรับกลีบดอกและกลีบเลี้ยงมีอย่างละ 3 กลีบ อุ้มน้ำและหลุดร่วงไว โคนกลีบดอกม้วนห่อ ล่วนปลายกลีบผายกว้างออก เกสรผู้มี 6 อัน ผลกลมแข็งโต",
-      };
-    
-      const herbData3 = {
-        สรรพคุณ: "บรรเทาอาการปวดไมเกรน สามารถใช้รักษาอาการปวดศีรษะได้ทั้งชนิดปวดแบบสองข้าง และข้างเดียวหรือไมเกรน สารเคมีที่อยู่ในขิงจะสามารถปรับสารไอโคซานอยด์ ทำให้อาการปวดศีรษะบรรเทาลง",
-      };
-      
+  const [herbsData, setHerbsData] = useState([]);
+  const { index } = useParams();
+
+  useEffect(() => {
+    // Fetch data from the appropriate endpoint
+    fetch("http://localhost:3000/api/data")
+      .then((response) => response.json())
+      .then((data) => {
+        setHerbsData(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
+
+  const herbData0 = herbsData.slice(0, 1)[0];
+
+  // Ensure index is a valid number
+  const herbIndex = parseInt(index);
+  // Find the herb with the specified index
+  const selectedHerb = isNaN(herbIndex) ? null : herbsData[herbIndex];
+
+  // Update herbData1 based on the selected herb
+  const herbData1 = selectedHerb
+    ? {
+        ชื่อสมุนไพร: selectedHerb["ชื่อสมุนไพร "],
+        ชื่อวิทยาศาสตร์: selectedHerb["ชื่อวิทยาศาสตร์"],
+        ชื่อพ้อง: selectedHerb["ชื่อพ้อง"],
+        ชื่อวงศ์: selectedHerb["ชื่อวงศ์"],
+        ชื่ออื่นๆ: selectedHerb["ชื่ออื่นๆ"] || "No other names available",
+      }
+    : {};
+  const herbData2 = selectedHerb
+    ? {
+        ลักษณะทางพฤกษศาสตร์: selectedHerb["ลักษณะทางพฤกษศาสตร์"],
+      }
+    : {};
+  const herbData3 = selectedHerb
+    ? {
+        สรรพคุณ: selectedHerb["สรรพคุณ"],
+      }
+    : {};
+
   return (
     <div className="app-container">
       <div className="flex-container">
         <img
-          src="./logoseaherbs.png"
+          src="/logoseaherbs.png"
           alt="Logo Sea Herbs"
           className="logo"
           style={{ width: "400px", height: "auto" }}
         />
+
         <div className="container">
           <div className="scrollable-container">
             <div className="search-container" style={{ textAlign: "center" }}>
@@ -69,8 +100,9 @@ const ShowDataPage = () => {
                     textAlign: "center",
                   }}
                 >
-                  Herb Name
+                  {selectedHerb && <p>{selectedHerb["ชื่อสมุนไพร "]}</p>}
                 </p>
+
                 <div
                   style={{
                     borderRadius: "15px",
@@ -92,7 +124,6 @@ const ShowDataPage = () => {
                     }}
                   />
                 </div>
-                
               </div>
             </div>
             <div
@@ -102,25 +133,21 @@ const ShowDataPage = () => {
                 alignItems: "left",
                 gap: "5px",
                 justifyContent: "center",
-                marginTop:"30px",
+                marginTop: "30px",
               }}
             >
               <div style={{ display: "flex", justifyContent: "center" }}>
-                <div style={{ marginRight: "50px" }}>
-                  <HerbCard 
-                    data={herbData1}
-                  />
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  <div style={{ marginRight: "50px" }}>
+                    <HerbCard data={herbData1} />
+                  </div>
+                  <div>
+                    <HerbCard data={herbData3} />
+                  </div>
                 </div>
                 <div>
-                  <HerbCard
-                    data={herbData2}
-                  />
+                  <HerbCard data={herbData2} />
                 </div>
-              </div>
-              <div>
-                <HerbCard
-                  data={herbData3}
-                />
               </div>
             </div>
           </div>
