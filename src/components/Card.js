@@ -21,7 +21,7 @@ const Card = ({ photo, text, onClick }) => {
           borderRadius: "15px",
         }}
       />
-      <p style={{ textAlign: "center", marginTop: "10px" }}>{text}</p>
+      <p style={{ textAlign: "center", marginTop: "10px",fontFamily: 'Prompt, sans-serif', }}>{text}</p>
     </div>
   );
 };

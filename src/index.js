@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./index.css";
 import Home from "./App";
 import SearchPage from "./page/searchpage";
+import ShowDataPage from "./page/showdatapage";
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />}></Route>
         <Route path="/search" element={<SearchPage />} />
+        <Route path="/showdata" element={<ShowDataPage />} />
       </Routes>
     </BrowserRouter>
   );

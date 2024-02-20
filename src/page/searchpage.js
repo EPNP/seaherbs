@@ -66,6 +66,7 @@ const SearchPage = () => {
                 gap: "5px", 
                 justifyContent: "center",
                 padding: "20px",
+                
               }}
             >
               {cardsData.map((card) => (
