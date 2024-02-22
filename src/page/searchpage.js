@@ -1,17 +1,38 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Card from "../components/Card";
+import { useNavigate } from 'react-router-dom';
 
 const SearchPage = () => {
-  const cardsData = [
-    { id: 1, photo: "https://images.unsplash.com/photo-1561407958-54aa9fa49a21?q=80&w=2448&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", text: "Card 1" },
-    { id: 2, photo: "https://images.unsplash.com/photo-1615484478243-c94e896edbae?q=80&w=2671&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", text: "Card 2" },
-    { id: 3, photo: "https://images.unsplash.com/photo-1702834137742-5d26220954ad?q=80&w=2680&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", text: "Card 3" },
-    { id: 4, photo: "https://images.unsplash.com/photo-1570295835271-04c05b4ed943?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", text: "Card 4" },
-  ];
+  const [herbsData, setHerbsData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
 
-  const handleCardClick = (cardNumber) => {
-    console.log(`Card ${cardNumber} clicked!`);
+  // Fetch data from the API when the component mounts
+  useEffect(() => {
+    fetch('http://localhost:3005/api/data')
+      .then(response => response.json())
+      .then(data => {
+        setHerbsData(data);
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
+  }, []);
+
+  const handleCardClick = (herbId) => {
+    navigate(`/showdata/${herbId}`);
+    console.log(`Herb ${herbId} clicked!`);
   };
+  
+
+  const handleSearchInputChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  // Filter the herbs based on the search query
+  const filteredHerbs = herbsData.filter(herb => {
+    return herb["ชื่อสมุนไพร"].toLowerCase().includes(searchQuery.toLowerCase()) ;
+  });
 
   return (
     <div className="app-container">
@@ -29,6 +50,8 @@ const SearchPage = () => {
                 type="text"
                 placeholder="SEARCH"
                 className="input"
+                value={searchQuery}
+                onChange={handleSearchInputChange}
                 style={{
                   background: "transparent",
                   border: "1px solid black",
@@ -52,12 +75,12 @@ const SearchPage = () => {
                 gap: "5px", 
                 justifyContent: "center",
               }}
-            ><p style={{
-              fontWeight: "300",
-              fontSize: "24px",
-              fontFamily: 'Prompt, sans-serif',
-            }}>Popular Search</p>
-
+            >
+              <p style={{
+                fontWeight: "300",
+                fontSize: "24px",
+                fontFamily: 'Prompt, sans-serif',
+              }}>Popular Search</p>
             </div>
             <div
               style={{
@@ -68,12 +91,13 @@ const SearchPage = () => {
                 padding: "20px",
               }}
             >
-              {cardsData.map((card) => (
+              {filteredHerbs.map((herb, index) => (
                 <Card
-                  key={card.id}
-                  photo={card.photo}
-                  text={card.text}
-                  onClick={() => handleCardClick(card.id)}
+                  key={index}
+                  id={index} 
+                  photo={herb["ลิ้งรูปภาพ"]}
+                  text={herb["ชื่อสมุนไพร"]} 
+                  onClick={() => handleCardClick(herb["id"])}
                 />
               ))}
             </div>
