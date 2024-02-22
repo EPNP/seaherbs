@@ -4,12 +4,12 @@ import { useNavigate } from 'react-router-dom';
 
 const SearchPage = () => {
   const [herbsData, setHerbsData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
-  
 
   // Fetch data from the API when the component mounts
   useEffect(() => {
-    fetch('http://localhost:3000/api/data')
+    fetch('http://localhost:3005/api/data')
       .then(response => response.json())
       .then(data => {
         setHerbsData(data);
@@ -19,10 +19,20 @@ const SearchPage = () => {
       });
   }, []);
 
-  const handleCardClick = (herbName, index) => {
-    navigate(`/showdata/${index}`);
-    console.log(`Herb ${herbName} clicked! ${index}`);
+  const handleCardClick = (herbId) => {
+    navigate(`/showdata/${herbId}`);
+    console.log(`Herb ${herbId} clicked!`);
   };
+  
+
+  const handleSearchInputChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  // Filter the herbs based on the search query
+  const filteredHerbs = herbsData.filter(herb => {
+    return herb["ชื่อสมุนไพร"].toLowerCase().includes(searchQuery.toLowerCase()) ;
+  });
 
   return (
     <div className="app-container">
@@ -40,6 +50,8 @@ const SearchPage = () => {
                 type="text"
                 placeholder="SEARCH"
                 className="input"
+                value={searchQuery}
+                onChange={handleSearchInputChange}
                 style={{
                   background: "transparent",
                   border: "1px solid black",
@@ -63,12 +75,12 @@ const SearchPage = () => {
                 gap: "5px", 
                 justifyContent: "center",
               }}
-            ><p style={{
-              fontWeight: "300",
-              fontSize: "24px",
-              fontFamily: 'Prompt, sans-serif',
-            }}>Popular Search</p>
-
+            >
+              <p style={{
+                fontWeight: "300",
+                fontSize: "24px",
+                fontFamily: 'Prompt, sans-serif',
+              }}>Popular Search</p>
             </div>
             <div
               style={{
@@ -79,13 +91,13 @@ const SearchPage = () => {
                 padding: "20px",
               }}
             >
-              {herbsData.map((herb, index) => (
+              {filteredHerbs.map((herb, index) => (
                 <Card
                   key={index}
-                  id={index} // Replace id with the index of the data
-                  photo={`https://images.unsplash.com/photo-1561407958-54aa9fa49a21?q=80&w=2448&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D`}
-                  text={herb["ชื่อสมุนไพร "]} // Replace text with the value of "ชื่อสมุนไพร"
-                  onClick={() => handleCardClick(herb["ชื่อสมุนไพร "], index)}
+                  id={index} 
+                  photo={herb["ลิ้งรูปภาพ"]}
+                  text={herb["ชื่อสมุนไพร"]} 
+                  onClick={() => handleCardClick(herb["id"])}
                 />
               ))}
             </div>

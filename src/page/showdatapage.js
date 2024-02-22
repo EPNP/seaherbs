@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import HerbCard from "../components/Databox";
-import * as fs from "fs";
 import { useParams } from "react-router-dom";
 
 const ShowDataPage = () => {
   const [herbsData, setHerbsData] = useState([]);
-  const { index } = useParams();
+  const { id } = useParams(); // Use id instead of index
+  const selectedHerb = herbsData.find(herb => herb["id"] === parseInt(id)); // Find herb by id
+
 
   useEffect(() => {
     // Fetch data from the appropriate endpoint
-    fetch("http://localhost:3000/api/data")
+    fetch("http://localhost:3005/api/data")
       .then((response) => response.json())
       .then((data) => {
         setHerbsData(data);
@@ -19,17 +20,16 @@ const ShowDataPage = () => {
       });
   }, []);
 
-  const herbData0 = herbsData.slice(0, 1)[0];
 
   // Ensure index is a valid number
-  const herbIndex = parseInt(index);
+  // const herbIndex = parseInt(index);
   // Find the herb with the specified index
-  const selectedHerb = isNaN(herbIndex) ? null : herbsData[herbIndex];
+  // const selectedHerb = isNaN(herbIndex) ? null : herbsData[herbIndex];
 
   // Update herbData1 based on the selected herb
   const herbData1 = selectedHerb
     ? {
-        ชื่อสมุนไพร: selectedHerb["ชื่อสมุนไพร "],
+        ชื่อสมุนไพร: selectedHerb["ชื่อสมุนไพร"],
         ชื่อวิทยาศาสตร์: selectedHerb["ชื่อวิทยาศาสตร์"],
         ชื่อพ้อง: selectedHerb["ชื่อพ้อง"],
         ชื่อวงศ์: selectedHerb["ชื่อวงศ์"],
@@ -100,7 +100,7 @@ const ShowDataPage = () => {
                     textAlign: "center",
                   }}
                 >
-                  {selectedHerb && <p>{selectedHerb["ชื่อสมุนไพร "]}</p>}
+                  {selectedHerb && <p>{selectedHerb["ชื่อสมุนไพร"]}</p>}
                 </p>
 
                 <div
@@ -111,9 +111,10 @@ const ShowDataPage = () => {
                   }}
                 >
                   <img
-                    src={
-                      "https://images.unsplash.com/photo-1561407958-54aa9fa49a21?q=80&w=2448&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                    }
+                    // src={
+                    //   "https://images.unsplash.com/photo-1561407958-54aa9fa49a21?q=80&w=2448&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    // }
+                    src={selectedHerb && selectedHerb["ลิ้งรูปภาพ"]}
                     alt={`Card`}
                     style={{
                       width: "800px",

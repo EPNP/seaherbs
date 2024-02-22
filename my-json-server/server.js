@@ -3,14 +3,14 @@ const fs = require('fs');
 const cors = require('cors');
 
 const app = express();
-const PORT = process.env.PORT || 3000; // Use the provided port or default to 3000
+const PORT = process.env.PORT || 3005; // Use the provided port or default to 3000
 
 // Serve static files from the public directory (optional)
 app.use(express.static('public'));
 app.use(cors());
 
 // Read JSON data from dataset_3.json synchronously when the server starts
-const jsonData = JSON.parse(fs.readFileSync('dataset_5.json', 'utf8'));
+const jsonData = JSON.parse(fs.readFileSync('dataset_7.json', 'utf8'));
 
 // Serve your JSON data at the /api/data endpoint
 app.get('/api/data', (req, res) => {
@@ -19,7 +19,7 @@ app.get('/api/data', (req, res) => {
 
 // Serve your JSON data at the /data endpoint
 app.get('/data', (req, res) => {
-    fs.readFile('dataset_5.json', 'utf8', (err, data) => {
+    fs.readFile('dataset_7.json', 'utf8', (err, data) => {
         if (err) {
             console.error('Error reading JSON file:', err);
             res.status(500).send('Internal Server Error');
