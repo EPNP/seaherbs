@@ -5,6 +5,9 @@ import { useNavigate } from 'react-router-dom';
 const SearchPage = () => {
   const [herbsData, setHerbsData] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchHistory, setSearchHistory] = useState([]);
+  const [showHistory, setShowHistory] = useState(false); // State to control visibility of search history
+  const [searchBarWidth, setSearchBarWidth] = useState(700); // Initial width of the search bar
   const navigate = useNavigate();
 
   // Fetch data from the API when the component mounts
@@ -24,10 +27,29 @@ const SearchPage = () => {
     console.log(`Herb ${herbId} clicked!`);
   };
   
-
   const handleSearchInputChange = (event) => {
     setSearchQuery(event.target.value);
+    if (event.key === 'Enter') {
+      updateSearchHistory(event.target.value);
+    }
   };
+
+  const updateSearchHistory = (query) => {
+    setSearchHistory(prevHistory => {
+      if (query.trim() !== "" && !prevHistory.includes(query)) {
+        return [query, ...prevHistory];
+      }
+      return prevHistory;
+    });
+  };
+
+  // Measure the width of the search bar dynamically
+  useEffect(() => {
+    const searchBar = document.getElementById("search-bar");
+    if (searchBar) {
+      setSearchBarWidth(searchBar.offsetWidth);
+    }
+  }, [searchQuery]);
 
   // Filter the herbs based on the search query
   const filteredHerbs = herbsData.filter(herb => {
@@ -45,13 +67,17 @@ const SearchPage = () => {
         />
         <div className="container">
           <div className="scrollable-container">
-            <div className="search-container" style={{ textAlign: "center" }}>
+            <div className="search-container" style={{ textAlign: "center", position: "relative" }}>
               <input
+                id="search-bar"
                 type="text"
                 placeholder="SEARCH"
                 className="input"
                 value={searchQuery}
                 onChange={handleSearchInputChange}
+                onFocus={() => setShowHistory(true)} 
+                onBlur={() => setShowHistory(false)} 
+                onKeyPress={handleSearchInputChange} 
                 style={{
                   background: "transparent",
                   border: "1px solid black",
@@ -68,6 +94,24 @@ const SearchPage = () => {
                   fontFamily: 'Prompt, sans-serif',
                 }}
               />
+              {showHistory && searchHistory.length > 0 && ( 
+                <div className="history-container" style={{
+                  position: "absolute",
+                  top: "calc(100% + 5px)", // Adjusted top position
+                  left: "50%", // Center horizontally
+                  transform: "translateX(-50%)", // Center horizontally
+                  width: `${searchBarWidth}px`, // Set width equal to search bar width
+                  backgroundColor: "#fff",
+                  boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                  borderRadius: "8px",
+                  zIndex: "1000", // Ensure the dropdown appears above other elements
+                  padding: "10px",
+                }}>
+                  {searchHistory.map((query, index) => (
+                    <p key={index}>{query}</p>
+                  ))}
+                </div>
+              )}
             </div>
             <div
               style={{
